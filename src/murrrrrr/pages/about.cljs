@@ -1,11 +1,11 @@
 (ns murrrrrr.pages.about
   (:require
    [murrrrrr.components.layout :refer [layout]]
-   [murrrrrr.components.animated-text :refer [ani-letters]]))
+   [murrrrrr.components.animated-text :refer [observed-letters]]))
 
 (defn spiel []
   [:div.spiel
-   [ani-letters "Hello this is the about page"]])
+   [observed-letters "Hello this is the about page"]])
 
 (defn about-page []
   [layout

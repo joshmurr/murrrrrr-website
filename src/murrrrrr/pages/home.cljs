@@ -1,7 +1,7 @@
 (ns murrrrrr.pages.home
   (:require
    [murrrrrr.components.layout :refer [layout]]
-   [murrrrrr.components.animated-text :refer [ani-letters observed-letters]]))
+   [murrrrrr.components.animated-text :refer [observed-letters]]))
 
 (defn spiel []
   [:div.spiel
@@ -11,5 +11,5 @@
 (defn home-page []
   [layout
    ; [background-container]
-   [:div {:style {:height "100vh"}}]
+   [:div {:style {:height "20vh"}}]
    [spiel]])

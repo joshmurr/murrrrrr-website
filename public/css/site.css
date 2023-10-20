@@ -56,6 +56,16 @@ a:hover {
   display: inline-block;
 }
 
+.hidden {
+  --op: 0;
+  --mat: var(--hidden-mat);
+}
+
+.visible {
+  --op: 1;
+  --mat: var(--visible-mat);
+}
+
 .letter {
   backface-visibility: visible;
   transition: all 0.4s cubic-bezier(0.58, 2, 0.59, 0.65);
