@@ -1,0 +1,83 @@
+:root {
+  --black: #000;
+  --white: #fff;
+
+  --dark: var(--black);
+  --light: var(--white);
+}
+
+body {
+  font-family: "Helvetica Neue", Verdana, Helvetica, Arial, sans-serif;
+  max-width: 600px;
+  margin: 0 auto;
+  padding-top: 72px;
+  -webkit-font-smoothing: antialiased;
+  font-size: 1.125em;
+  color: #333;
+  line-height: 1.5em;
+  background-color: var(--dark);
+  color: var(--light);
+
+  transition: all 0.3s ease;
+  transition-property: background-color, color;
+  will-change: background-color, color;
+}
+
+@media (prefers-color-scheme: light) {
+  body {
+    background: var(--light);
+    color: var(--dark);
+  }
+}
+
+h1 {
+  font-size: 2.5em;
+}
+
+h2 {
+  font-size: 2em;
+}
+
+h3 {
+  font-size: 1.5em;
+}
+
+a {
+  text-decoration: none;
+  color: #09f;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.clip,
+.letter {
+  display: inline-block;
+}
+
+.letter {
+  backface-visibility: visible;
+  transition: all 0.4s cubic-bezier(0.58, 2, 0.59, 0.65);
+  transition-property: transform, opacity;
+  transition-delay: 0;
+  transform-style: preserve-3d;
+  transform-origin: center center;
+  white-space: pre;
+  text-rendering: optimizeLegibility;
+  transform: var(--mat);
+  opacity: var(--op);
+}
+
+.border {
+  border: 1px solid #09f;
+}
+
+#app canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}

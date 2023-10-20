@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "esnext",
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
+    "preserveConstEnums": true,
+    "moduleResolution": "node",
+    "strict": true,
+    "strictNullChecks": true,
+    "skipLibCheck": true,
+    "noImplicitAny": false,
+    "allowJs": false,
+    "declaration": false,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "rootDir": "./src/ts",
+    "outDir": "./public/js/background"
+  },
+  "include": ["./src/ts"],
+  "exclude": ["./**/node_modules", "./public"]
+}
