@@ -27,8 +27,8 @@ import {
 } from "./softbody";
 import { aabb } from "@geomm/geometry";
 
-const { innerWidth, innerHeight } = window;
-const SIZE = vec2(innerWidth, innerHeight);
+const { clientWidth: width, clientHeight: height } = document.documentElement;
+const SIZE = vec2(width, height);
 const GRAVITY = vec2(0, 0.01);
 const BOUNDARY_FRICTION = 0.6; // Damping of momentum on collision with boundary.
 const COLLISON_DAMPING = 0.7; // Damping of momentum on collision with object.
@@ -208,9 +208,9 @@ const step = () => {
 };
 
 window.addEventListener("resize", () => {
-  const { innerWidth, innerHeight } = window;
-  SIZE.x = innerWidth;
-  SIZE.y = innerHeight;
+  const { clientWidth: width, clientHeight: height } = document.documentElement;
+  SIZE.x = width;
+  SIZE.y = height;
   c.width = SIZE.x;
   c.height = SIZE.y;
 });
@@ -234,6 +234,28 @@ window.addEventListener("resize", () => {
   SIZE.x = innerWidth;
   SIZE.y = innerHeight;
   bounds = aabb(vec2(SIZE.x / 2, SIZE.y / 2), SIZE.x / 2, SIZE.y / 2);
+});
+
+const getScreenHeight = () => {
+  const body = document.body;
+  const html = document.documentElement;
+
+  const height = Math.max(
+    body.scrollHeight,
+    body.offsetHeight,
+    html.clientHeight,
+    html.scrollHeight,
+    html.offsetHeight
+  );
+
+  return height;
+};
+
+window.addEventListener("scroll", (e) => {
+  const height = getScreenHeight();
+  const scroll = window.scrollY;
+  const maxScroll = height - SIZE.y;
+  GRAVITY.y = (0.5 - scroll / maxScroll) * 0.05;
 });
 
 init() && requestAnimationFrame(step);
