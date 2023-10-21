@@ -56,7 +56,7 @@ a:hover {
   display: inline-block;
 }
 
-.hidden {
+.initial {
   --op: 0;
   --mat: var(--hidden-mat);
 }
@@ -64,19 +64,35 @@ a:hover {
 .visible {
   --op: 1;
   --mat: var(--visible-mat);
+  --speed: 0.4s;
+}
+
+.hidden {
+  --op: 0;
+  --mat: var(--hidden-mat);
+  --speed: 0;
+}
+
+.animated {
 }
 
 .letter {
   backface-visibility: visible;
-  transition: all 0.4s cubic-bezier(0.58, 2, 0.59, 0.65);
+  transition: all var(--speed) cubic-bezier(0.58, 2, 0.59, 0.65);
   transition-property: transform, opacity;
-  transition-delay: 0;
   transform-style: preserve-3d;
   transform-origin: center center;
   white-space: pre;
   text-rendering: optimizeLegibility;
   transform: var(--mat);
   opacity: var(--op);
+}
+
+.notransition {
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -o-transition: none !important;
+  transition: none !important;
 }
 
 .border {
@@ -90,4 +106,10 @@ a:hover {
   width: 100%;
   height: 100%;
   z-index: -1;
+}
+
+.full-screen {
+  position: relative;
+  width: 100%;
+  height: 100vh;
 }

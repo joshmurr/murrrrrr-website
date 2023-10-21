@@ -25,31 +25,35 @@
   (session/put! :route {:current-page (page-for current-page)
                         :route-params route-params}))
 
+;   axis: [0.95, 0, 0],
+  ;   angle: PI * 0.6,
+  ; },
+  ; scale: [0.5, 1, 1],
+
 (defn- mat-to-string [mat]
   (str "matrix3d(" (clojure.string/join ", " mat) ")"))
 (defonce hidden-mat (mat-to-string (matFromTransformations
-                                    #js {"translation" #js [0 24 0],
-                                         "rotation" #js {"axis" #js [0 0 0]
-                                                         "angle" 0}
-                                         "scale" #js [1 1 1]})))
+                                    (clj->js {:translation [-15 8 0]
+                                              :rotation {:axis [1 0 0]
+                                                         :angle (* Math/PI 0.2)}
+                                              :scale [1 1 1]}))))
 (defonce visible-mat (mat-to-string (identityMat)))
 
 (defn init-css-variables! []
   (let [root (.querySelector js/document ":root")]
-    (update-css! root :--visible-mat  visible-mat)
-    (update-css! root :--hidden-mat hidden-mat)
-    (update-css! root :--text-mat "var(--hidden-mt)")
-    (update-css! root :--text-op 0)))
+    (update-css! root :--text-opacity visible-mat)
+    (update-css! root :--visible-mat visible-mat)
+    (update-css! root :--hidden-mat hidden-mat)))
 
 (defn begin-transition-styles! []
   (let [root (.querySelector js/document ":root")]
-    (update-css! root :--hidden-mat visible-mat)
-    (update-css! root :--visible-mat hidden-mat)))
+    (update-css! root :--visible-mat hidden-mat)
+    (update-css! root :--hidden-mat visible-mat)))
 
 (defn end-transition-styles! []
   (let [root (.querySelector js/document ":root")]
-    (update-css! root :--visible-mat (mat-to-string visible-mat))
-    (update-css! root :--hidden-mat (mat-to-string hidden-mat))))
+    (update-css! root :--hidden-mat hidden-mat)
+    (update-css! root :--visible-mat visible-mat)))
 
 (defn delay-transition! [current-page route-params]
   (begin-transition-styles!)
@@ -57,7 +61,7 @@
            (transition! current-page route-params)
            (end-transition-styles!)) 1500))
 
-(defn init! []
+(defn ^:export init! []
   (clerk/initialize!)
   (accountant/configure-navigation!
    {:nav-handler
