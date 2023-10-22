@@ -4,17 +4,18 @@
 
   --dark: var(--black);
   --light: var(--white);
+
+  --spring: cubic-bezier(0.58, 2, 0.59, 0.65);
+
+  --pontus: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 body {
   font-family: "Helvetica Neue", Verdana, Helvetica, Arial, sans-serif;
-  max-width: 600px;
-  margin: 0 auto;
-  padding-top: 72px;
   -webkit-font-smoothing: antialiased;
   font-size: 1.125em;
-  color: #333;
   line-height: 1.5em;
+  color: #333;
   background-color: var(--dark);
   color: var(--light);
 
@@ -78,7 +79,7 @@ a:hover {
 
 .letter {
   backface-visibility: visible;
-  transition: all var(--speed) cubic-bezier(0.58, 2, 0.59, 0.65);
+  transition: all var(--speed) var(--spring);
   transition-property: transform, opacity;
   transform-style: preserve-3d;
   transform-origin: center center;
@@ -112,4 +113,57 @@ a:hover {
   position: relative;
   width: 100%;
   height: 100vh;
+}
+
+.colorscheme-toggle {
+  --dark-bg: #444;
+  --dark-border: #777;
+  --dark-btn: #666;
+  --light-bg: #ddd;
+  --light-border: #777;
+  --light-btn: #ccc;
+}
+
+.colorscheme-toggle[type="checkbox"] {
+  /* Add if not using autoprefixer */
+  -webkit-appearance: none;
+  appearance: none;
+  /* For iOS < 15 to remove gradient background */
+  background-color: var(--dark-bg);
+  /* Not removed via appearance */
+  margin: 0;
+  font: inherit;
+  color: currentColor;
+  width: 4em;
+  height: 2em;
+  border: 0.15em solid var(--dark-border);
+  border-radius: 999em;
+  transform: translateY(-0.075em);
+  display: grid;
+  place-content: center;
+  transition: 400ms background-color ease;
+}
+
+.colorscheme-toggle[type="checkbox"]::before {
+  content: "";
+  width: 1.4em;
+  height: 1.4em;
+  transform: translateX(1em);
+  transition: 200ms transform ease, 400ms background-color ease;
+  box-shadow: inset 1em 1em blue;
+  border-radius: 999em;
+  box-shadow: inset 1em 1em var(--dark-btn);
+
+  /* Windows High Contrast Mode */
+  background-color: CanvasText;
+}
+
+.colorscheme-toggle[type="checkbox"]:checked {
+  background-color: var(--light-bg);
+  border-color: var(--light-border);
+}
+
+.colorscheme-toggle[type="checkbox"]:checked::before {
+  box-shadow: inset 1em 1em var(--light-btn);
+  transform: translateX(-1em);
 }

@@ -3,7 +3,8 @@
    [reagent.session :as session]
    [murrrrrr.routes :refer [path-for]]
    [murrrrrr.pages.home :refer [home-page]]
-   [murrrrrr.pages.about :refer [about-page]]))
+   [murrrrrr.pages.about :refer [about-page]]
+   [murrrrrr.components.colorscheme-toggle :refer [colorscheme-toggle]]))
 
 ;; -------------------------
 ;; Page mounting component
@@ -19,7 +20,8 @@
           [:li [:a {:href (path-for :about)} "About"]]]]]
        [page]
        [:footer
-        [:p "This is the foooter"]]])))
+        [:p "This is the foooter"]
+        [colorscheme-toggle]]])))
 
 ;; -------------------------
 ;; Translate routes -> page components
