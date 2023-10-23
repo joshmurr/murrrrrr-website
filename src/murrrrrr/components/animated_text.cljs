@@ -31,5 +31,5 @@
   (with-meta ani-letters
     {:component-did-mount (fn [^react/JSXElement this]
                             (let [c (.. this -refs -container)]
-                              (observe-visibility c show)))}))
+                              (observe-visibility c show true)))}))
 

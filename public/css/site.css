@@ -1,13 +1,39 @@
 :root {
-  --black: #000;
-  --white: #fff;
+  --bg: #000;
+  --primary: #fff;
 
   --dark: var(--black);
   --light: var(--white);
 
   --spring: cubic-bezier(0.58, 2, 0.59, 0.65);
-
   --pontus: cubic-bezier(0.23, 1, 0.32, 1);
+
+  --padding: 2em;
+
+  --mobile: 768px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #ddd;
+    --primary: #000;
+  }
+}
+
+.light-mode {
+  --bg: #fff;
+  --primary: #000;
+}
+
+.dark-mode {
+  --bg: #000;
+  --primary: #fff;
 }
 
 body {
@@ -15,20 +41,59 @@ body {
   -webkit-font-smoothing: antialiased;
   font-size: 1.125em;
   line-height: 1.5em;
-  color: #333;
-  background-color: var(--dark);
-  color: var(--light);
-
   transition: all 0.3s ease;
   transition-property: background-color, color;
   will-change: background-color, color;
+  color: var(--primary);
+  background-color: var(--bg);
+
+  margin: 0;
+  padding: var(--padding);
+
+  min-height: 100vh;
+
+  overflow-x: hidden;
 }
 
-@media (prefers-color-scheme: light) {
-  body {
-    background: var(--light);
-    color: var(--dark);
-  }
+#app {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 60px;
+  display: flex;
+  align-items: center;
+
+  padding: var(--padding);
+}
+
+header > nav > ul {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  gap: 1em;
+
+  list-style: none;
+}
+
+footer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 h1 {
@@ -75,6 +140,7 @@ a:hover {
 }
 
 .animated {
+  white-space: pre-wrap;
 }
 
 .letter {
@@ -83,7 +149,6 @@ a:hover {
   transition-property: transform, opacity;
   transform-style: preserve-3d;
   transform-origin: center center;
-  white-space: pre;
   text-rendering: optimizeLegibility;
   transform: var(--mat);
   opacity: var(--op);
@@ -113,6 +178,7 @@ a:hover {
   position: relative;
   width: 100%;
   height: 100vh;
+  pointer-events: none;
 }
 
 .colorscheme-toggle {
@@ -166,4 +232,9 @@ a:hover {
 .colorscheme-toggle[type="checkbox"]:checked::before {
   box-shadow: inset 1em 1em var(--light-btn);
   transform: translateX(-1em);
+}
+
+.spiel {
+  width: 100%;
+  max-width: 72ch;
 }

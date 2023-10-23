@@ -4,9 +4,21 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1" name="viewport" />
     <link href="/css/site.css" rel="stylesheet" type="text/css" />
+
+    <meta name="color-scheme" content="dark light" />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: light)"
+      content="white"
+    />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: dark)"
+      content="black"
+    />
   </head>
   <body>
-    <div id="app">
+    <div id="app" class="dark-mode">
       <h3>ClojureScript has not been compiled!</h3>
       <p>
         please run <b>npx shadow-cljs watch app</b> in order to start the

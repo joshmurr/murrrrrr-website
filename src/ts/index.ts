@@ -25,7 +25,7 @@ import {
   integrateForces,
   resetAttributes,
 } from "./softbody";
-import { aabb } from "@geomm/geometry";
+import { aabb, boundingBox } from "@geomm/geometry";
 
 const { clientWidth: width, clientHeight: height } = document.documentElement;
 const SIZE = vec2(width, height);
@@ -36,7 +36,7 @@ const COLLISION_FORCE = 400; // Magnitude of force repeling softbody nodes on co
 const MOUSE_PULL = 0.0001; // Strength of mouse force.
 const DAMP = 0.3; // SOFtbody node damping.
 const STIFF = 0.01; // Softbody spring stiffness.
-const MASS = 3; // SOFTBody node mass.
+const MASS = 10; // SOFTBody node mass.
 const N_BODIES = 6;
 
 let mousePos = vec2(0, 0);
@@ -55,6 +55,7 @@ const init = () => {
   const parent = document.getElementById("background") as HTMLElement;
   if (!parent) return false;
   appendEl(c, parent);
+  handleResize();
   return true;
 };
 
@@ -112,6 +113,15 @@ const createSquare = (
   }
 
   return createSoftBody(nodes, color);
+};
+
+const createFixedSquare = (position: Vec2, width: number, height: number) => {
+  return {
+    pos: position,
+    width,
+    height,
+    aabb: aabb(position, width / 2, height / 2),
+  };
 };
 
 const bodies: SoftBody[] = [];
@@ -196,8 +206,7 @@ const updateBody = (sb: SoftBody, bodies: SoftBody[]) => {
 };
 
 const step = () => {
-  ctx.fillStyle = "#000";
-  ctx.fillRect(0, 0, SIZE.x, SIZE.y);
+  ctx.clearRect(0, 0, SIZE.x, SIZE.y);
 
   bodies.forEach((body) => {
     updateBody(body, bodies);
@@ -229,12 +238,14 @@ window.addEventListener("mousemove", (e) => {
 /*   mouseDown = false; */
 /* }); */
 
-window.addEventListener("resize", () => {
-  const { innerWidth, innerHeight } = window;
-  SIZE.x = innerWidth;
-  SIZE.y = innerHeight;
+const handleResize = () => {
+  const { clientWidth: width, clientHeight: height } = document.documentElement;
+  SIZE.x = width;
+  SIZE.y = height;
   bounds = aabb(vec2(SIZE.x / 2, SIZE.y / 2), SIZE.x / 2, SIZE.y / 2);
-});
+};
+
+window.addEventListener("resize", () => handleResize());
 
 const getScreenHeight = () => {
   const body = document.body;
@@ -251,11 +262,24 @@ const getScreenHeight = () => {
   return height;
 };
 
+const colorA = [30, 30, 30];
+const colorB = [90, 90, 90];
+
 window.addEventListener("scroll", (e) => {
   const height = getScreenHeight();
   const scroll = window.scrollY;
   const maxScroll = height - SIZE.y;
   GRAVITY.y = (0.5 - scroll / maxScroll) * 0.05;
+
+  const color = colorA.map((c, i) => {
+    const diff = colorB[i] - c;
+    const ratio = scroll / maxScroll;
+    return floor(c + diff * ratio);
+  });
+  const rgb = `rgb(${color.map((c) => c.toString()).join(", ")})`;
+
+  console.log(color, rgb);
+  document.body.style.backgroundColor = rgb;
 });
 
 init() && requestAnimationFrame(step);

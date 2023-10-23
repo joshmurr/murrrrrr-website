@@ -6,8 +6,8 @@
    [reitit.frontend :as reitit]
    [clerk.core :as clerk]
    [accountant.core :as accountant]
-   [murrrrrr.routes :refer [router]]
-   [murrrrrr.page-mounting :refer [page-for current-page]]
+   [murrrrrr.routes :refer [router page-for]]
+   [murrrrrr.page-mounting :refer [current-page]]
    [murrrrrr.utils :refer [sleep update-css!]]
    [clojure.string]
    ["@geomm/maths" :refer (identityMat matFromTransformations)]))
