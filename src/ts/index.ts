@@ -45,11 +45,24 @@ let mousePos = vec2(0, 0);
 let mouseDown = false;
 let bounds = aabb(vec2(SIZE.x / 2, SIZE.y / 2), SIZE.x / 2, SIZE.y / 2);
 
-const obs = aabb(vec2(SIZE.x / 2, SIZE.y / 2), 300, 100);
+/* const obs = aabb(vec2(SIZE.x / 2, SIZE.y / 2), 300, 100); */
 const OBS_THICK = 10;
 
 let c: HTMLCanvasElement | undefined;
 let ctx: CanvasRenderingContext2D | undefined;
+
+const rectToAABB = (rect: {
+  width: number;
+  height: number;
+  left: number;
+  top: number;
+}) => {
+  return aabb(
+    vec2(rect.left + rect.width / 2, rect.top + rect.height / 2),
+    rect.width / 2,
+    rect.height / 2
+  );
+};
 
 const init = () => {
   c = createEl("canvas", {
@@ -242,9 +255,14 @@ const updateBody = (sb: SoftBody, bodies: SoftBody[]) => {
   resetAttributes(sb);
   calculateAttributes(sb);
   calculateSurface(sb);
-  for (let i = 0; i < sb.nodes.length; i++) {
-    const currentNode = sb.nodes[i];
-    boundaryCollideExternal(currentNode, BOUNDARY_FRICTION, obs, OBS_THICK);
+  if (window?.obstacles) {
+    for (let i = 0; i < sb.nodes.length; i++) {
+      const currentNode = sb.nodes[i];
+      window.obstacles?.forEach((obstacle) => {
+        const obs = rectToAABB(obstacle);
+        boundaryCollideExternal(currentNode, BOUNDARY_FRICTION, obs, OBS_THICK);
+      });
+    }
   }
   dampUpdateBoundary(sb, BOUNDARY_FRICTION, bounds);
 
@@ -273,8 +291,8 @@ const step = () => {
 
   bodies.forEach((body) => {
     updateBody(body, bodies);
-    drawAABB(ctx, obs);
-    drawAABB(ctx, obs, OBS_THICK);
+    /* drawAABB(ctx, obs); */
+    /* drawAABB(ctx, obs, OBS_THICK); */
     drawBody(ctx, body, { fill: true, points: false, normals: false });
   });
 
