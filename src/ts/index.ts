@@ -5,16 +5,18 @@ import {
   SQRT2,
   TWO_PI,
   add,
+  cos,
   distance,
   floor,
   randRange,
   random,
   rotate,
   scale,
+  sin,
   sub,
   vec2,
 } from "@geomm/maths";
-import { createNode, type Spring } from "./node";
+import { boundaryCollideExternal, createNode, type Spring } from "./node";
 import {
   type SoftBody,
   calculateAttributes,
@@ -25,23 +27,26 @@ import {
   integrateForces,
   resetAttributes,
 } from "./softbody";
-import { aabb, boundingBox } from "@geomm/geometry";
+import { aabb } from "@geomm/geometry";
 
 const { clientWidth: width, clientHeight: height } = document.documentElement;
 const SIZE = vec2(width, height);
 const GRAVITY = vec2(0, 0.01);
 const BOUNDARY_FRICTION = 0.6; // Damping of momentum on collision with boundary.
 const COLLISON_DAMPING = 0.7; // Damping of momentum on collision with object.
-const COLLISION_FORCE = 400; // Magnitude of force repeling softbody nodes on collision.
+const COLLISION_FORCE = 100; // Magnitude of force repeling softbody nodes on collision.
 const MOUSE_PULL = 0.0001; // Strength of mouse force.
-const DAMP = 0.3; // SOFtbody node damping.
-const STIFF = 0.01; // Softbody spring stiffness.
+const DAMP = 0.1; // SOFtbody node damping.
+const STIFF = 0.1; // Softbody spring stiffness.
 const MASS = 10; // SOFTBody node mass.
 const N_BODIES = 6;
 
 let mousePos = vec2(0, 0);
 let mouseDown = false;
 let bounds = aabb(vec2(SIZE.x / 2, SIZE.y / 2), SIZE.x / 2, SIZE.y / 2);
+
+const obs = aabb(vec2(SIZE.x / 2, SIZE.y / 2), 300, 100);
+const OBS_THICK = 10;
 
 let c: HTMLCanvasElement | undefined;
 let ctx: CanvasRenderingContext2D | undefined;
@@ -57,6 +62,48 @@ const init = () => {
   appendEl(c, parent);
   handleResize();
   return true;
+};
+// Function to create a square softbody.
+const createCircle = (
+  damping: number,
+  mass: number,
+  stiffness: number,
+  node_count: number,
+  size: number,
+  position: Vec2,
+  radius: number,
+  color: string
+) => {
+  // Create empty array for the nodes.
+  const nodes = new Array(node_count);
+  const inc = TWO_PI / nodes.length;
+  for (let i = 0; i < nodes.length; i++) {
+    const springs: Spring[] = [];
+    for (let j = 0; j < nodes.length; j++) {
+      if (i != j) {
+        // Create a spring from each node to every other node.
+        springs.push({ idx: j, length: 0, stiffness });
+      }
+      const p = add(
+        vec2(cos(inc * i) * radius, sin(inc * i) * radius),
+        position
+      );
+      nodes[i] = createNode({ pos: p, mass, damping, springs });
+    }
+  }
+
+  for (let i = 0; i < nodes.length; i++) {
+    const currentNode = nodes[i];
+    const springs = currentNode.springs;
+    for (let j = 0; j < springs.length; j++) {
+      const spring = springs[j];
+      const d = distance(currentNode.pos, nodes[spring.idx].pos);
+      spring.length = d;
+      spring.stiffness = (spring.stiffness / d) * SQRT2 * size;
+    }
+  }
+
+  return createSoftBody(nodes, color);
 };
 
 // Function to create a square softbody.
@@ -126,14 +173,14 @@ const createFixedSquare = (position: Vec2, width: number, height: number) => {
 
 const bodies: SoftBody[] = [];
 for (let i = 0; i < N_BODIES; i++) {
-  const body = createSquare(
+  const body = createCircle(
     DAMP,
     MASS,
     STIFF,
     32,
     200,
-    vec2(randRange(0, SIZE.x), randRange(0, SIZE.y)),
-    random() * TWO_PI,
+    vec2(randRange(0, SIZE.x), randRange(100, 120)),
+    random() * 100 + 50,
     `#${floor(random() * 16777215).toString(16)}`
   );
 
@@ -195,6 +242,10 @@ const updateBody = (sb: SoftBody, bodies: SoftBody[]) => {
   resetAttributes(sb);
   calculateAttributes(sb);
   calculateSurface(sb);
+  for (let i = 0; i < sb.nodes.length; i++) {
+    const currentNode = sb.nodes[i];
+    boundaryCollideExternal(currentNode, BOUNDARY_FRICTION, obs, OBS_THICK);
+  }
   dampUpdateBoundary(sb, BOUNDARY_FRICTION, bounds);
 
   for (let i = 0; i < bodies.length; i++) {
@@ -205,11 +256,25 @@ const updateBody = (sb: SoftBody, bodies: SoftBody[]) => {
   }
 };
 
+const drawAABB = (ctx: CanvasRenderingContext2D, aabb: AABB, offset = 0) => {
+  const { center, halfWidth, halfHeight } = aabb;
+  ctx.strokeStyle = "#f00";
+  ctx.beginPath();
+  ctx.moveTo(center.x - halfWidth + offset, center.y - halfHeight + offset);
+  ctx.lineTo(center.x + halfWidth - offset, center.y - halfHeight + offset);
+  ctx.lineTo(center.x + halfWidth - offset, center.y + halfHeight - offset);
+  ctx.lineTo(center.x - halfWidth + offset, center.y + halfHeight - offset);
+  ctx.closePath();
+  ctx.stroke();
+};
+
 const step = () => {
   ctx.clearRect(0, 0, SIZE.x, SIZE.y);
 
   bodies.forEach((body) => {
     updateBody(body, bodies);
+    drawAABB(ctx, obs);
+    drawAABB(ctx, obs, OBS_THICK);
     drawBody(ctx, body, { fill: true, points: false, normals: false });
   });
 
@@ -230,13 +295,13 @@ window.addEventListener("mousemove", (e) => {
   mousePos = vec2(e.clientX, e.clientY);
 });
 
-/* window.addEventListener("mousedown", () => { */
-/*   mouseDown = true; */
-/* }); */
-/**/
-/* window.addEventListener("mouseup", () => { */
-/*   mouseDown = false; */
-/* }); */
+window.addEventListener("mousedown", () => {
+  mouseDown = true;
+});
+
+window.addEventListener("mouseup", () => {
+  mouseDown = false;
+});
 
 const handleResize = () => {
   const { clientWidth: width, clientHeight: height } = document.documentElement;
@@ -265,7 +330,7 @@ const getScreenHeight = () => {
 const colorA = [30, 30, 30];
 const colorB = [90, 90, 90];
 
-window.addEventListener("scroll", (e) => {
+window.addEventListener("scroll", () => {
   const height = getScreenHeight();
   const scroll = window.scrollY;
   const maxScroll = height - SIZE.y;
@@ -277,8 +342,6 @@ window.addEventListener("scroll", (e) => {
     return floor(c + diff * ratio);
   });
   const rgb = `rgb(${color.map((c) => c.toString()).join(", ")})`;
-
-  console.log(color, rgb);
   document.body.style.backgroundColor = rgb;
 });
 
