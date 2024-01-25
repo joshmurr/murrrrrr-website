@@ -5,7 +5,7 @@
                 [reagent-utils "0.3.4"]
                 [metosin/reitit "0.7.0-alpha7"]
                 [pez/clerk "1.0.0"]
-                [clj-commons/cljss "1.6.4"]
+                [dv/cljs-emotion "2023-07-16.0.0"]
                 [venantius/accountant "0.2.5"
                  :exclusions [org.clojure/tools.reader]]]
  :builds       {:app {:target     :browser
@@ -15,4 +15,7 @@
                                          :init-fn murrrrrr.core/init!}}
                       :devtools   {:after-load murrrrrr.core/mount-root}}}
 
+ :linters
+ {:unresolved-symbol
+  {:exclude [defstyles defstyled]}}
  :dev-http     {3000 {:root "public"}}}

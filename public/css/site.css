@@ -239,8 +239,8 @@ a:hover {
   max-width: 72ch;
 }
 
-.obstacle-text {
-  border: 1px solid #09f;
+.obstacle {
   overflow: hidden;
-  position: absolute;
+  min-width: 200px;
+  min-height: 200px;
 }

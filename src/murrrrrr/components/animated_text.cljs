@@ -47,7 +47,6 @@
 
 (def observed-letters
   (augment-self-on-mount ani-letters (fn [container]
-                                       (print container)
                                        (observe-visibility container show)
                                        (update-css! container :--color "blue"))))
 

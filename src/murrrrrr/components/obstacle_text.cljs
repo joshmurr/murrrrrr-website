@@ -1,18 +1,22 @@
 (ns murrrrrr.components.obstacle-text
-  (:require [cljss.reagent :refer-macros [defstyled]]))
+  (:require
+   [dv.cljs-emotion-reagent :refer [jsx]]))
 
-(declare obstacle-text)
+(defn obstacle-text [dims text]
+  (let [{:keys [top left width height border]} dims]
+    (jsx :div {:className "obstacle"
+               :css {:position "absolute"
+                     :overflow "hidden"
+                     :color "white"
+                     :top (or top 0)
+                     :left (or left 0)
+                     :width (or width "100%")
+                     :height (or height "100%")
+                     :font-size "1.5em"
+                     :font-family "monospace"
+                     :border (if (nil? border) "none" "1px dashed white")
+                     :font-weight "bold"}}
+         [:p text])))
 
-(defstyled obstacle-text :div
-  {:position "absolute"
-   :top (with-meta #(str % "px") :top)
-   :left (with-meta #(str % "px") :left)
-   :width (with-meta #(str % "px") :width)
-   :height (with-meta #(str % "px") :height)
-   :overflow "hidden"
-   :color "white"
-   :border "1px solid white"
-   :font-size "1.5em"
-   :font-family "monospace"
-   :font-weight "bold"
-   :text-shadow "0 0 10px white"})
+
+

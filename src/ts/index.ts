@@ -1,4 +1,4 @@
-import type { Vec2 } from "@geomm/api";
+import type { AABB, Vec2 } from "@geomm/api";
 import { appendEl, createEl } from "@geomm/dom";
 import {
   PI,
@@ -46,7 +46,8 @@ let mouseDown = false;
 let bounds = aabb(vec2(SIZE.x / 2, SIZE.y / 2), SIZE.x / 2, SIZE.y / 2);
 
 /* const obs = aabb(vec2(SIZE.x / 2, SIZE.y / 2), 300, 100); */
-const OBS_THICK = 10;
+const OBS_THICK = 30;
+let obstacles: Array<AABB> = [];
 
 let c: HTMLCanvasElement | undefined;
 let ctx: CanvasRenderingContext2D | undefined;
@@ -175,22 +176,13 @@ const createSquare = (
   return createSoftBody(nodes, color);
 };
 
-const createFixedSquare = (position: Vec2, width: number, height: number) => {
-  return {
-    pos: position,
-    width,
-    height,
-    aabb: aabb(position, width / 2, height / 2),
-  };
-};
-
 const bodies: SoftBody[] = [];
 for (let i = 0; i < N_BODIES; i++) {
   const body = createCircle(
     DAMP,
     MASS,
     STIFF,
-    32,
+    24,
     200,
     vec2(randRange(0, SIZE.x), randRange(100, 120)),
     random() * 100 + 50,
@@ -255,12 +247,16 @@ const updateBody = (sb: SoftBody, bodies: SoftBody[]) => {
   resetAttributes(sb);
   calculateAttributes(sb);
   calculateSurface(sb);
-  if (window?.obstacles) {
+  if (obstacles.length > 0) {
     for (let i = 0; i < sb.nodes.length; i++) {
       const currentNode = sb.nodes[i];
-      window.obstacles?.forEach((obstacle) => {
-        const obs = rectToAABB(obstacle);
-        boundaryCollideExternal(currentNode, BOUNDARY_FRICTION, obs, OBS_THICK);
+      obstacles.forEach((obstacle) => {
+        boundaryCollideExternal(
+          currentNode,
+          BOUNDARY_FRICTION,
+          obstacle,
+          OBS_THICK
+        );
       });
     }
   }
@@ -291,8 +287,9 @@ const step = () => {
 
   bodies.forEach((body) => {
     updateBody(body, bodies);
-    /* drawAABB(ctx, obs); */
-    /* drawAABB(ctx, obs, OBS_THICK); */
+    /* obstacles.forEach((obstacle) => { */
+    /*   drawAABB(ctx, obstacle, OBS_THICK); */
+    /* }); */
     drawBody(ctx, body, { fill: true, points: false, normals: false });
   });
 
@@ -321,16 +318,28 @@ window.addEventListener("mouseup", () => {
   mouseDown = false;
 });
 
+const updateObstacles = () => {
+  obstacles = Array.from(document.querySelectorAll(".obstacle")).map((el) => {
+    const rect = el.getBoundingClientRect();
+    return rectToAABB(rect);
+  });
+};
+
 const handleResize = () => {
   const { clientWidth: width, clientHeight: height } = document.documentElement;
   SIZE.x = width;
   SIZE.y = height;
   bounds = aabb(vec2(SIZE.x / 2, SIZE.y / 2), SIZE.x / 2, SIZE.y / 2);
+  updateObstacles();
+};
+
+const handleScroll = () => {
+  updateObstacles();
 };
 
 window.addEventListener("resize", () => handleResize());
 
-const getScreenHeight = () => {
+/* const getScreenHeight = () => {
   const body = document.body;
   const html = document.documentElement;
 
@@ -343,9 +352,11 @@ const getScreenHeight = () => {
   );
 
   return height;
-};
+}; */
 
-const colorA = [30, 30, 30];
+window.addEventListener("scroll", () => handleScroll());
+
+/* const colorA = [30, 30, 30];
 const colorB = [90, 90, 90];
 
 window.addEventListener("scroll", () => {
@@ -361,6 +372,6 @@ window.addEventListener("scroll", () => {
   });
   const rgb = `rgb(${color.map((c) => c.toString()).join(", ")})`;
   document.body.style.backgroundColor = rgb;
-});
+}); */
 
 init() && requestAnimationFrame(step);

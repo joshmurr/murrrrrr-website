@@ -10,7 +10,10 @@
    [murrrrrr.page-mounting :refer [current-page]]
    [murrrrrr.utils :refer [sleep update-css!]]
    [clojure.string]
+   [react]
    ["@geomm/maths" :refer (identityMat matFromTransformations)]))
+
+(set! (.. js/window -React) react)
 
 (def first-load? (atom true))
 

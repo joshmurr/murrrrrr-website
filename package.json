@@ -18,6 +18,8 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.3",
+    "@emotion/styled": "^11.11.0",
     "@geomm/api": "^1.0.4",
     "@geomm/dom": "^1.0.4",
     "@geomm/geometry": "^1.0.5",
